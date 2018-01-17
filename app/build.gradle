@@ -1,0 +1,50 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "27.0.3"
+    defaultConfig {
+        applicationId "com.mazaiting.ffmpegtest"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        APP启动之后一直crash，原因就是没有找到我们在java文件里load的动态库
+        sourceSets {
+            main {
+                jniLibs.srcDirs = ['libs']
+            }
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags "-fexceptions"
+            }
+//          指定abiFilters，因为AndroidStudio默认会编译所有架构的动态库
+            ndk{
+                abiFilters "armeabi"
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    testCompile 'junit:junit:4.12'
+    compile 'com.jakewharton:butterknife:5.1.1'
+}
